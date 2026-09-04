@@ -91,9 +91,17 @@ Evaluated 12 synthetic cases.
 
 ### Comparison against committed results
 
-- `RESULTS.md` classification buckets and per-case JSON are byte-identical to the output regenerated in `/tmp/public-verify-clone` at `088b2f4` — **match** (`total_cases 12`, totals above, 3 tests OK).
+- Tightened comparison (fresh unauthenticated public clone, tested SHA `088b2f4`):
+  ```sh
+  # in /tmp/final-verify-clone at 088b2f4 (origin https://github.com/necat101/hn-c2pa-camera-trust-boundary-lab.git)
+  python3 scripts/evaluate_cases.py > /tmp/final_fresh_out.json  # exit 0
+  python3 -c "import re, pathlib; t=pathlib.Path('RESULTS.md').read_text(); m=re.search(r'```json\\n(.*?)\\n```', t, re.S); open('/tmp/committed_json.json','w').write(m.group(1))"  # exit 0 — extracts the committed per-case JSON payload from RESULTS.md
+  python3 -c "import json; a=open('/tmp/committed_json.json').read().strip(); b=open('/tmp/final_fresh_out.json').read().strip(); assert a == b, 'mismatch'"  # exit 0 — byte-identical extracted JSON
+  python3 -c "import json; a=json.load(open('/tmp/committed_json.json')); b=json.load(open('/tmp/final_fresh_out.json')); assert a == b"  # exit 0 — structurally equal JSON
+  ```
+  The regenerated evaluator output is **byte-identical extracted JSON** to the committed per-case JSON payload inside `RESULTS.md` (and structurally equal when parsed). The entire `RESULTS.md` Markdown is not claimed to be byte-identical to raw JSON — only the extracted payload is. **match** (`total_cases 12`, totals above, 3 tests OK).
 - The `RESULTS.md` contents are deterministic synthetic fixtures (seed 42); no real media, hardware, or exploit.
-- Working tree at `088b2f4`: `git status --porcelain` empty, `git ls-files` shows 8 tracked public items (`.github/workflows/audit.yml`, `.gitignore`, `README.md`, `RESULTS.md`, `VERIFY.md` (pre-update), `fixtures/capture_cases.json`, `scripts/evaluate_cases.py`, `tests/__init__.py`, `tests/test_evaluate_cases.py` plus the updated `README.md` at audit).
+- Working tree at `088b2f4`: `git status --porcelain` empty, `git ls-files` shows 9 tracked public items (`.github/workflows/audit.yml`, `.gitignore`, `README.md`, `RESULTS.md`, `VERIFY.md` (pre-update), `fixtures/capture_cases.json`, `scripts/evaluate_cases.py`, `tests/__init__.py`, `tests/test_evaluate_cases.py` — 9 files).
 
 ### Environment
 
