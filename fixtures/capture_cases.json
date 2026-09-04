@@ -1,0 +1,114 @@
+{
+  "generated": "deterministic synthetic fixtures, seed 42, no real media, no hardware, no exploit",
+  "note": "Every case is synthetic. Fields are stated facts for the evaluator; no case pretends to reproduce a real exploit or to prove a real camera's security posture.",
+  "cases": [
+    {
+      "id": "c01_valid_trusted_intact",
+      "description": "Baseline: manifest present, signature valid, hash binding valid, signer on trust list and cert valid, capture-path evidence asserts an intact app/OS/hardware path (stated, not independently audited).",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": false, "subject": "CN=Synthetic Pixel Camera AL2 synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL2", "attestation_method": "Android_KeyAttestation", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": true, "compromised": false, "compromise_type": null, "evidence_detail": "synthetic attestation token asserting locked bootloader and latest patch, as presented by the synthetic claim generator" },
+      "scene": { "kind": "outdoor_street", "is_photographed_display": false, "optical_attack": false, "note": "Even with intact-path evidence, no cryptographic proof that the physical scene is truthful; evidence is about provenance plumbing." }
+    },
+    {
+      "id": "c02_valid_trusted_root_compromised",
+      "description": "Signature valid and signer trusted, but the capture path is explicitly compromised: synthetic root/LPE allows the signing key to be invoked on arbitrary bytes (models Buchanan's Android argument without reproducing any exploit).",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": false, "subject": "CN=Synthetic Pixel Camera AL2 synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL2", "attestation_method": "Android_KeyAttestation", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": true, "compromised": true, "compromise_type": "synthetic_root_lpe_key_invocation", "evidence_detail": "synthetic attestation still presented as valid; device reports locked bootloader while synthetic root invokes StrongBox/TEE to sign arbitrary synthetic bytes" },
+      "scene": { "kind": "synthetic_ai_image_file", "is_photographed_display": false, "optical_attack": false, "note": "Synthetic file was signed as if captured; shows valid manifest does not imply uncompromised path." }
+    },
+    {
+      "id": "c03_valid_untrusted_signer",
+      "description": "Signature mathematically valid but signer not on the trust list (unknown/self-signed). Validator must treat it as untrusted.",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": false, "cert_valid": true, "revoked": false, "subject": "CN=Unknown synthetic signer" },
+      "product": { "conformance_claimed": false, "assurance_level": null, "attestation_method": null, "on_conforming_products_list": false },
+      "capture_path": { "evidence_present": false, "compromised": false, "compromise_type": null, "evidence_detail": null },
+      "scene": { "kind": "indoor_room", "is_photographed_display": false, "optical_attack": false, "note": "Trust decision requires trust-list membership, not just signature math." }
+    },
+    {
+      "id": "c04_tampered_manifest_invalid",
+      "description": "Manifest present but tampered: hash binding does not match the asset bytes, so signature validation must fail.",
+      "manifest": { "present": true, "signature_valid": false, "hash_binding_valid": false, "tampered": true },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": false, "subject": "CN=Synthetic Pixel Camera AL2 synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL2", "attestation_method": "Android_KeyAttestation", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": true, "compromised": false, "compromise_type": null, "evidence_detail": "synthetic attestation token present but irrelevant because manifest is invalid" },
+      "scene": { "kind": "unknown", "is_photographed_display": false, "optical_attack": false, "note": "Tampering is detectable via hard binding / signature checks." }
+    },
+    {
+      "id": "c05_conforming_no_scene_truth",
+      "description": "Conforming-product metadata present and validation passes, but the fixture states no evidence about whether the physical scene was truthful. Conformance proves implementation properties, not scene truth.",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": false, "subject": "CN=Synthetic Leica-style camera synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL1", "attestation_method": "Vendor_TEE", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": true, "compromised": false, "compromise_type": null, "evidence_detail": "synthetic secure-path assertion, as claimed by the generator" },
+      "scene": { "kind": "staged_scene_with_props", "is_photographed_display": false, "optical_attack": false, "note": "Photographs a physically staged tabletop that misrepresents an event; provenance cannot detect staging." }
+    },
+    {
+      "id": "c06_photographed_display_analog_hole",
+      "description": "Synthetic analog-hole case: a conforming camera honestly signs a photograph of a high-resolution display showing a synthetic image. The cryptographic chain is intact; the scene truth is still not established.",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": false, "subject": "CN=Synthetic Pixel Camera AL2 synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL2", "attestation_method": "Android_KeyAttestation", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": true, "compromised": false, "compromise_type": null, "evidence_detail": "camera OS path honest; sensor faithfully captured photons from the display" },
+      "scene": { "kind": "display_showing_synthetic_image", "is_photographed_display": true, "optical_attack": true, "note": "Demonstrates why cryptographic provenance alone cannot establish what was physically in front of the sensor." }
+    },
+    {
+      "id": "c07_valid_signature_revoked_cert",
+      "description": "Signature bytes are mathematically valid but the signer certificate has been revoked. Validator must reject despite valid math.",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": true, "subject": "CN=Synthetic Pixel Camera AL2 synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL2", "attestation_method": "Android_KeyAttestation", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": true, "compromised": false, "compromise_type": null, "evidence_detail": "synthetic attestation present" },
+      "scene": { "kind": "outdoor_street", "is_photographed_display": false, "optical_attack": false, "note": "Revocation checks are part of the trust model." }
+    },
+    {
+      "id": "c08_missing_manifest",
+      "description": "No C2PA manifest present at all. Absence of provenance is not proof of falsity, but also provides no provenance evidence.",
+      "manifest": { "present": false, "signature_valid": false, "hash_binding_valid": false, "tampered": false },
+      "signer": { "on_trust_list": false, "cert_valid": false, "revoked": false, "subject": null },
+      "product": { "conformance_claimed": false, "assurance_level": null, "attestation_method": null, "on_conforming_products_list": false },
+      "capture_path": { "evidence_present": false, "compromised": false, "compromise_type": null, "evidence_detail": null },
+      "scene": { "kind": "unknown", "is_photographed_display": false, "optical_attack": false, "note": "No manifest to validate." }
+    },
+    {
+      "id": "c09_valid_untrusted_expired_cert",
+      "description": "Signature valid but signer certificate expired at the claimed capture time; time-stamp / validity interval checks must fail.",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": false, "cert_valid": false, "revoked": false, "subject": "CN=Expired synthetic signer" },
+      "product": { "conformance_claimed": false, "assurance_level": null, "attestation_method": null, "on_conforming_products_list": false },
+      "capture_path": { "evidence_present": false, "compromised": false, "compromise_type": null, "evidence_detail": null },
+      "scene": { "kind": "outdoor_street", "is_photographed_display": false, "optical_attack": false, "note": "Credential validity interval matters to the trust model." }
+    },
+    {
+      "id": "c10_printed_photo_analog_hole_variant",
+      "description": "Variant of the analog hole: high-resolution print of a synthetic image is photographed. Optics are honest; scene is still synthetic in origin.",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": false, "subject": "CN=Synthetic Sony-style camera synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL1", "attestation_method": "Vendor_TEE", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": true, "compromised": false, "compromise_type": null, "evidence_detail": "honest capture path, sensor-faithful" },
+      "scene": { "kind": "print_of_synthetic_image", "is_photographed_display": false, "optical_attack": true, "note": "Analog hole does not require a screen; any re-photography of a depiction works." }
+    },
+    {
+      "id": "c11_fault_injection_attestation_bypass",
+      "description": "Synthetic hardware fault-injection bypass: attestation reports locked state while the synthetic device is under adversary control. Models the class of attack Buchanan describes as hardware fault injection / DRAM glitching, without reproducing it.",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": false, "subject": "CN=Synthetic Pixel Camera AL2 synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL2", "attestation_method": "Android_KeyAttestation", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": true, "compromised": true, "compromise_type": "synthetic_fault_injection_attestation_bypass", "evidence_detail": "synthetic attestation asserts integrity; synthetic compromised flag indicates the report is not trustworthy per fixture ground truth" },
+      "scene": { "kind": "synthetic_studio_render", "is_photographed_display": false, "optical_attack": false, "note": "Shows why attestation is deployment-specific and not a property of the C2PA spec's cryptography." }
+    },
+    {
+      "id": "c12_conforming_claim_missing_evidence",
+      "description": "Claims conforming-product status but provides no capture-path evidence field. Conformance label alone does not prove an uncompromised path.",
+      "manifest": { "present": true, "signature_valid": true, "hash_binding_valid": true, "tampered": false },
+      "signer": { "on_trust_list": true, "cert_valid": true, "revoked": false, "subject": "CN=Synthetic vendor camera synthetic.example" },
+      "product": { "conformance_claimed": true, "assurance_level": "AL1", "attestation_method": "Google_PlayIntegrity", "on_conforming_products_list": true },
+      "capture_path": { "evidence_present": false, "compromised": false, "compromise_type": null, "evidence_detail": null },
+      "scene": { "kind": "indoor_room", "is_photographed_display": false, "optical_attack": false, "note": "Product conformance and capture-path evidence are distinct properties." }
+    }
+  ]
+}
